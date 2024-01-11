@@ -1,0 +1,55 @@
+<!-- home.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Welcome to Your Health Dashboard!</h1>
+
+    {% if user %}
+        <p>Username: {{ user.username }}</p>
+        <p>Height: {{ user.height }} cm</p>
+        <p>Weight: {{ user.weight }} kg</p>
+        <p>BMI: {{ user.bmi }}</p>
+        <p>Goal: {{ user.goal }}</p>
+
+        <div id="calendar"></div>
+
+        <!-- 詳細情報の入力フォーマット -->
+        <div id="detailForm" style="display: none;">
+            <label for="dateInput">Date:</label>
+            <input type="text" id="dateInput" disabled>
+            <!-- 他の詳細情報の入力フィールドを追加 -->
+            <!-- 保存ボタンなども追加 -->
+        </div>
+    {% else %}
+        <p>No user data found.</p>
+    {% endif %}
+{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // FullCalendarの初期化
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            // カレンダーの設定など
+            // イベントのクリック時に詳細情報のフォーマットを表示する処理を追加
+            eventClick: function (info) {
+                showDetailForm(info.event.start);
+            }
+        });
+
+        // カレンダーのイベントを追加する場合はここで追加
+
+        // カレンダーを描画
+        calendar.render();
+    });
+
+    function showDetailForm(date) {
+        // 詳細情報の入力フォーマットを表示
+        document.getElementById('detailForm').style.display = 'block';
+        // 日付をフォームに設定
+        document.getElementById('dateInput').value = date.toLocaleDateString();
+        // 他の詳細情報の入力フィールドに初期値を設定
+        // 例: document.getElementById('otherInput').value = '';
+    }
+</script>
