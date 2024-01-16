@@ -5,7 +5,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from uuid import uuid4
+
+
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 class UserActivateTokensManager(models.Manager):
     def activate_user_by_token(self, token):
@@ -39,6 +42,17 @@ class UserActivateTokens(models.Model):
         Users, on_delete=models.CASCADE,
         primary_key=True,
     )
+
+    @classmethod
+    def activate_user_by_token(cls, token):
+        try:
+            user_token = cls.objects.get(token=token, expired_at__gt=timezone.now())
+            user_token.user.is_active = True
+            user_token.user.save()
+            user_token.delete()  # トークンは一度使われたら削除する場合
+            return True  # 有効化成功
+        except cls.DoesNotExist:
+            return False  # トークンが見つからないか有効期限切れ
 
     objects = UserActivateTokensManager()
 
