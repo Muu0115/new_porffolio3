@@ -1,14 +1,18 @@
+# accounts/views.py
+
 from django.shortcuts import render, redirect
+from django.views import View
 from .forms import RegistForm
 from django.core.exceptions import ValidationError
 from .models import UserActivateTokens
+from django.http import HttpResponse
 
-# Create your views here.
 
-def home(request):
-    return render(
-        request, 'accounts/home.html'
-    )
+class HomeView(View):
+    def get(self, request):
+        return render(request, 'accounts/home.html')
+
+    # 他に必要なメソッドがあれば追加
 
 def regist(request):
     regist_form = RegistForm(request.POST or None)
